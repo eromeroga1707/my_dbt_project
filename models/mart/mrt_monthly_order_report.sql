@@ -12,7 +12,7 @@ ORDER BY total_monthly_users DESC
 SELECT DATE_TRUNC(order_date,month) AS order_month,
 COUNT(DISTINCT user.user_name) AS total_monthly_users_from_jawa_timur
 FROM {{ source('sales_database', 'order')}} AS orders
-LEFT JOIN {{ source('sales_database', 'user')}} AS user ON user.user_name = orders.user_name
+LEFT JOIN {{ ref('stg_sales_database__user')}} AS user ON user.user_name = orders.user_name
 WHERE user.customer_state LIKE '%JAWA%TIMUR%'
 GROUP BY order_month
 
