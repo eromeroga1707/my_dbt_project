@@ -1,6 +1,6 @@
 WITH monthly_recap AS (
     SELECT 
-        DATE_TRUNC('month', order_created_at) AS order_month,
+        DATE_TRUNC(order_created_at,month) AS order_month,
         COUNT(DISTINCT user_id) AS total_monthly_users,
         COUNT(order_id) AS total_monthly_orders
     FROM {{ ref('int_sales_database__order') }}
@@ -9,15 +9,14 @@ WITH monthly_recap AS (
 
 total_monthly_user_from_jawa_timur AS (
     SELECT 
-        DATE_TRUNC('month', order_created_at) AS order_month,
+        DATE_TRUNC(order_created_at,month) AS order_month,
         COUNT(DISTINCT o.user_id) AS total_monthly_users_from_jawa_timur
     FROM {{ ref('int_sales_database__order') }} AS o
     LEFT JOIN {{ ref('int_sales_database__user_favorite_product') }} AS u 
         ON o.user_id = u.user_id
-    WHERE o.user_state ILIKE '%JAWA%TIMUR%'
+    WHERE o.user_state LIKE '%JAWA%TIMUR%'
     GROUP BY order_month
 )
-
 SELECT 
     r.order_month,
     COALESCE(r.total_monthly_users, 0) AS total_monthly_users,
